@@ -1,0 +1,54 @@
+<div id='studentActivities' class='dashlet-box'>
+    <div class="dashlet-title">Student Stats</div>
+    
+	<div>
+		<table width="100%">
+			<tr>
+				<td>Examples Submitted</td>
+				<td><b><?php echo $this->numExamples ?></b></td>
+			</tr>
+			<tr>
+				<td>Votes Cast</td>
+				<td><b><?php echo $this->numVotes."<br/>".$this->numUpVotes." UP + ".$this->numDownVotes." DN"?></b></td>
+			</tr>
+			<tr>
+				<td>Comments made</td>
+				<td><b><?php echo $this->numComments?></b></td>
+			</tr>
+			<tr>
+				<td>Comment Score</td>
+				<td><b><?php echo $this->commentScore ?></b></td>
+			</tr>
+			<tr>
+				<td>Tag Score</td>
+				<td><b><?php echo $this->tagScore."<br/>Examples: ".$this->tagExampleScore." Questions: ".$this->tagQuestionScore ?></b></td>
+			</tr>
+			<tr>
+				<td>Last Logged In</td>
+				<td><b><?php echo date("l F jS", strtotime($this->lastLogin)) ?></b></td>
+			</tr>
+			<tr>
+				<td>Answers made</td>
+				<td><b><?php echo $this->numAnswers ?></b></td>
+			</tr>
+			<tr>
+				<td>Comment Marked</td>
+				<td><b><?php echo $this->numCommentsAssessed ?></b></td>
+			</tr>
+			<tr>
+				<td>Average Comment Mark</td>
+				<td><b><?php echo $this->avgCommentsMark ?></b></td>
+			</tr>
+			<tr>
+				<td>Answers Marked</td>
+				<td><b><?php echo $this->numAnswersAssessed ?></b></td>
+			</tr>
+			<tr>
+				<td>Average Answer Mark</td>
+				<td><b><?php echo $this->avgAnswersMark ?></b></td>
+			</tr>
+			
+			
+		</table>
+    </div>
+</div>

@@ -12,5 +12,125 @@
  */
 class Vote extends BaseVote
 {
+	/**
+	 * param $author_id if null, then comment score for the whole run is returned. 
+	 * 					if a valid user id is given, comment score of that user is calculated
+	 *
+	 */
+	public static function calculateCommentScore($author_id=null){
 
+		$comments = array();
+		if ($author_id != null){
+			// get all user's comments
+	        $comments = Doctrine::getTable("Comment")
+	                    ->findByDql("author_id = ? AND run_id = ?", array($author_id, $_SESSION['run_id']));
+		}else{
+			// get all comments
+	        $comments = Doctrine::getTable("Comment")
+	                    ->findByDql("run_id = ?", $_SESSION['run_id']);
+		}
+                            
+        $commentIds = array();
+        foreach ($comments as $comment){
+            $commentIds[] = $comment->id;
+        }
+        
+        if (count($comments) == 0){
+            return 0;
+        }
+        
+        // sum up all the votes for the user comments found
+        $votes = Doctrine_Query::create()
+                    ->select("sum(vote_value) as vote_sum")
+                    ->from("Vote")
+                    ->whereIn("obj_id", $commentIds)
+                    ->andWhere("obj_type = ?", Votable::$COMMENT)
+                    ->execute();
+
+        if (count($votes) == 0 || $votes[0]['vote_sum']==0){
+            return 0;
+        } else {
+        	return $votes[0]['vote_sum'];
+        }
+    }
+    
+
+    /**
+	 * param $author_id if null, then tag score for the whole run is returned. 
+	 * 					if a valid user id is given, tag score of that user is calculated
+	 *
+	 */
+    public static function calculateTagScore($author_id=null){
+		$questionConcepts = array();
+		$exampleConcepts = array();
+		if ($author_id != null){
+			// get all user's comments
+	        $questionConcepts = Doctrine::getTable("QuestionConcept")
+	                    ->findByDql("author_id = ? AND run_id = ?", array($author_id, $_SESSION['run_id']));
+	
+			$exampleConcepts = Doctrine::getTable("ExampleConcept")
+			                    ->findByDql("author_id = ? AND run_id = ?", array($author_id, $_SESSION['run_id']));
+		}else{
+			// get all comments
+	        $questionConcepts = Doctrine::getTable("QuestionConcept")
+	                    ->findByDql("run_id = ?", $_SESSION['run_id']);
+	
+			$exampleConcepts = 	Doctrine::getTable("ExampleConcept")
+						->findByDql("run_id = ?", $_SESSION['run_id']);
+		}
+        
+
+
+        $questionConceptScore = 0;
+        if (count($questionConcepts) != 0){
+			// aggregate question concept ids
+	        $questionConceptIds = array();
+	        foreach ($questionConcepts as $questionConcept){
+	            $questionConceptIds[] = $questionConcept->id;
+	            //echo "<hr>".$questionConcept->id;
+	        }
+
+        	// sum up all the votes for the user comments found
+	        $votes1 = Doctrine_Query::create()
+	                    ->select("sum(vote_value) as vote_sum")
+	                    ->from("Vote")
+	                    ->whereIn("obj_id", $questionConceptIds)
+	                    ->andWhere("obj_type = ?", Votable::$QUESTION_CONCEPT)
+	                    ->execute();
+	
+	        if (count($votes1) != 0){
+	        	$questionConceptScore = $votes1[0]['vote_sum'];
+	        }
+        }
+        
+
+
+        $exampleConceptScore = 0;
+        if (count($exampleConcepts) != 0){
+        	// aggregate example concept ids
+			$exampleConceptIds = array();
+	        foreach ($exampleConcepts as $exampleConcept){
+	            $exampleConceptIds[] = $exampleConcept->id;
+	        }
+	
+	        // sum up all the votes for the user comments found
+    	    $votes2 = Doctrine_Query::create()
+                    ->select("sum(vote_value) as vote_sum")
+                    ->from("Vote")
+                    ->whereIn("obj_id", $exampleConceptIds)
+                    ->andWhere("obj_type = ?", Votable::$EXAMPLE_CONCEPT)
+                    ->execute();
+
+	        if (count($votes2) != 0){
+	        	$exampleConceptScore = $votes2[0]['vote_sum'];
+	        }
+        }
+
+        $tagExampleScore=$exampleConceptScore;
+        $tagQuestionScore=$questionConceptScore;
+        $tagScoreTot = $questionConceptScore+$exampleConceptScore;
+
+        return array($tagExampleScore, $tagQuestionScore, $tagScoreTot);
+        
+    }
 }

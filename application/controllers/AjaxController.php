@@ -17,6 +17,63 @@ class AjaxController extends Zend_Controller_Action
         $this->view->activities = Doctrine::getTable("Activity")
                                     ->findByDql("author_id = ?", $params['studentId']);
     }
+
+	public function studentScoreCardAction(){
+		$params = $this->getRequest()->getParams();
+		
+		$studentId = $params['studentId'];
+		$student = Doctrine::getTable('User')->find($studentId);
+		
+		$this->view->lastLogin = $student['last_login'];
+				
+		$this->view->numExamples = count(Doctrine::getTable('Example')->findByAuthorId($studentId));
+		$this->view->numAnswers = count(Doctrine::getTable('Answer')->findByAuthorId($studentId));
+		$this->view->numComments = count(Doctrine::getTable('Comment')->findByAuthorId($studentId));
+		$this->view->numVotes = count(Doctrine::getTable('Vote')->findByAuthorId($studentId));
+		$this->view->numUpVotes = count(Doctrine::getTable('Vote')->findByDql("author_id = ? AND vote_value > 0", $studentId));
+		$this->view->numDownVotes = count(Doctrine::getTable('Vote')->findByDql("author_id = ? AND vote_value < 0", $studentId));
+		
+	   	$commentAssessment = Doctrine_Query::create()
+			->select('count(c.id) as num_comments_assessed, avg(a.mark) as avg_mark')
+	       	->from('Comment c')
+			->innerJoin('c.Assessment a')
+			->where('a.obj_type = ?', Assessable::$COMMENT)
+			->andWhere('c.author_id = ?', $studentId)
+			->execute(null, Doctrine::HYDRATE_ARRAY);
+		if (count($commentAssessment) == 0){
+			$this->view->numCommentAssessed = 0;
+			$this->view->avgCommentsMark = 0;
+		}else{
+			$commentAssessment = $commentAssessment[0];
+			$this->view->numCommentsAssessed = round($commentAssessment['num_comments_assessed'],1);
+			$this->view->avgCommentsMark = round($commentAssessment['avg_mark'],1);
+		}
+		
+		
+		$answerAssessment = Doctrine_Query::create()
+			->select('count(a.id) as num_answers_assessed, avg(ass.mark) as avg_mark')
+	       	->from('Answer a')
+			->innerJoin('a.Assessment ass')
+			->where('ass.obj_type = ?', Assessable::$ANSWER)
+			->andWhere('a.author_id = ?', $studentId)
+			->execute(null, Doctrine::HYDRATE_ARRAY);
+			
+		if (count($answerAssessment) == 0){
+			$this->view->numAnswersAssessed = 0;
+			$this->view->avgAnswersMark = 0;
+		}else{
+			$answerAssessment = $answerAssessment[0];
+			$this->view->numAnswersAssessed = round($answerAssessment['num_answers_assessed'],1);
+			$this->view->avgAnswersMark = round($answerAssessment['avg_mark'],1);
+		}
+		
+		$this->view->commentScore = Vote::calculateCommentScore($studentId);
+		
+		list($tagExampleScore, $tagQuestionScore, $tagScoreTot) = Vote::calculateTagScore($studentId);
+		$this->view->tagExampleScore = $tagExampleScore;
+		$this->view->tagQuestionScore = $tagQuestionScore;
+		$this->view->tagScore = $tagScoreTot;
+	}
     
     public function resolveAlertAction()
     {
@@ -37,6 +94,13 @@ class AjaxController extends Zend_Controller_Action
     
     public function myupdatesAction()
     {
+		$studentRepressedActivityTypes = array(
+			ActivityType::$VOTED_ON_ANSWER_CONCEPT,
+			ActivityType::$VOTED_ON_EXAMPLE_CONCEPT
+		);
+		
+		$params = $this->getRequest()->getParams();
+		
         $q = new Doctrine_RawSql();
         $q
         	->select('{a.*}')
@@ -48,7 +112,16 @@ class AjaxController extends Zend_Controller_Action
             ->andWhere('a.id NOT IN (select r.activity_id from resolved_user_alert r where r.author_id = '
 							.$_SESSION['author_id'].' AND run_id = '.$_SESSION['run_id'].')')
         	->orderBy('a.id DESC');
-
+		
+		if ($_SESSION['profile'] == 'STUDENT'){
+			$q->andWhereNotIn('a.activity_type_id', $studentRepressedActivityTypes);
+		}
+		
+		if (isset($params['limit'])){
+			$q->limit($params['limit']);
+			$this->view->limit = $params['limit'];
+		}
+		
     	$activities = $q->execute();		
         
         $this->view->activities = $activities;
@@ -56,6 +129,13 @@ class AjaxController extends Zend_Controller_Action
 
     public function myactivityAction()
     {
+		$studentRepressedActivityTypes = array(
+			ActivityType::$VOTED_ON_ANSWER_CONCEPT,
+			ActivityType::$VOTED_ON_EXAMPLE_CONCEPT
+		);
+		
+		$params = $this->getRequest()->getParams();
+		
         $q = new Doctrine_RawSql();
     	$q	->select('{a.*}')
         	->from('Activity a')
@@ -66,6 +146,15 @@ class AjaxController extends Zend_Controller_Action
 							.$_SESSION['author_id'].' AND run_id = '.$_SESSION['run_id'].')')
         	->orderBy('a.id DESC');
     	
+		if ($_SESSION['profile'] == 'STUDENT'){
+			$q->andWhereNotIn('a.activity_type_id', $studentRepressedActivityTypes);
+		}
+		
+		if (isset($params['limit'])){
+			$q->limit($params['limit']);
+			$this->view->limit = $params['limit'];
+		}
+
     	$activities = $q->execute();
     	
         $this->view->activities = $activities;
@@ -73,12 +162,16 @@ class AjaxController extends Zend_Controller_Action
 
     public function classactivityAction()
     {
+		$params = $this->getRequest()->getParams();
+		
 		$studentRepressedActivityTypes = array(
 			ActivityType::$ASSESSED_COMMENT, 
 			ActivityType::$ASSESSED_EXAMPLE, 
 			ActivityType::$ASSESSED_ANSWER,
 			ActivityType::$CREATED_QUESTION,
-			ActivityType::$ANSWERED_QUESTION
+			ActivityType::$ANSWERED_QUESTION, 
+			ActivityType::$VOTED_ON_ANSWER_CONCEPT,
+			ActivityType::$VOTED_ON_EXAMPLE_CONCEPT
 		);
 		
         $q = new Doctrine_RawSql();
@@ -96,6 +189,11 @@ class AjaxController extends Zend_Controller_Action
 			$q->andWhereNotIn('a.activity_type_id', $studentRepressedActivityTypes);
 		}
 
+		if (isset($params['limit'])){
+			$q->limit($params['limit']);
+			$this->view->limit = $params['limit'];
+		}
+			
     	$activities = $q->execute();
     	
         $this->view->activities = $activities;
