@@ -1,3 +1,107 @@
+#hw-form{
+    text-align: center;
+}
+.save-button{
+    font-size: 1.5em;
+    padding: 6px;
+background-color: #BEF781;
+}
+#hw-counter{
+	font-size: 1.4em;
+	text-align: center;
+}
+#hwProblem{
+    font-size: 1.5em; 
+    width: 70%;
+    padding: 50px;
+    margin: 20px auto 50px auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    -moz-box-shadow: 10px 10px 3px #ccc;
+    -webkit-box-shadow: 10px 10px 3px #ccc;
+    box-shadow: 10px 10px 3px #ccc;
+}
+
+#myPrinciples{
+    font-size: 1.5em;
+    margin-bottom: 1em;
+}
+
+#equations-msg{
+    font-size: 1.2em;
+    margin-bottom: 1.5em;
+}
+
+#principles-msg{
+    font-size: 1.2em;
+    margin-bottom: 1.5em
+}
+
+#equations-container {
+    margin: 20px auto 20px auto;
+}
+
+#sortable1, #sortable2 { 
+    height: 500px;
+    list-style-type: none;
+    margin: 0 5px 0 0;
+    overflow: auto;
+    padding: 25px 0 20px 25px;
+    width: 460px;
+}
+
+#sortable1 li, #sortable2 li { 
+	margin: 0 5px 5px 5px; 
+	padding: 5px; font-size: 1.2em; 
+	width: 400px; 
+}
+
+#sortable1{
+	float: left;
+}
+
+#sortable2{
+    border: 3px outset;
+    margin-left: 25px;
+    background-color: #F7F8E0;
+}
+
+.date {
+    color: #414B53;
+    float: right;
+    font-size: small;
+}
+
+.msg-reanswer{
+	padding: 0.5em;
+	border: 1px dashed #000000;
+	width: 64%;
+	margin-bottom: 1em;
+}
+
+#fileupload{
+	margin-bottom: 1em;
+}
+
+#concept-select-list{
+    margin-left: 690px;
+    margin-top: 27px;
+    position: fixed;
+    z-index: 90;
+}
+
+#web-controls {
+    margin-top: 5px;
+}
+
+#web-controls div{
+    /*float: left;*/
+}
+
+#web-controls .control{
+	float:left;
+}
+
 #webiframe{
 	border: 0;
 }
@@ -78,7 +182,7 @@
 }
 
 #my-recent-activity-feed{
-    max-height: 214px;
+    max-height: 209px;
     overflow: auto;
 }
 
@@ -109,8 +213,8 @@
 }
 
 #assessment-review-container{
+	float: left;
     margin-top: 3em;
-    width: 600px;
 }
 
 .div-show {
@@ -404,7 +508,7 @@ display:none;
 
 
 #posts-list {
-    max-height: 450px;
+    /*max-height: 450px;*/
     overflow: auto;
     text-align: left;
     margin-bottom: 10px;
@@ -432,8 +536,9 @@ display:none;
 }
 
 #reply-container {
+	float: left;
     margin-top: 1em;
-    width: 600px;
+
 }
 
 
@@ -509,15 +614,14 @@ li.header-li a{
     border: 1px solid #000000;
     border-radius: 6px 6px 6px 6px;
     box-shadow: 1px 1px 3px;
-
     color: #333333;
     /*font-family: Tahoma, Geneva, sans-serif;*/
     margin-right: 1em;
-
     margin-bottom: 1em;
     margin-right: 1em;
     overflow: hidden;
     padding: 0.5em;
+    text-align: center;
 }
 
 .dashlet-box-image .image-holder {
@@ -706,7 +810,6 @@ body {
     position: fixed;
     width: 100%;*/
     z-index: 5;
-    text-a
 }
 
 #header div{
@@ -769,6 +872,9 @@ div.jp-video-270p {
     width: 30%;
 }
 
+#elo-tags1{
+}
+
 .comment-score{
 	font-size: 1.3em;
 	padding: 0.4em;
@@ -779,7 +885,7 @@ div.jp-video-270p {
 #orig-reply-container
 {
 	margin-top:1em;
-	width:600px;
+	float:left;
 }
 
 .answer-mc{
@@ -802,4 +908,74 @@ div.jp-video-270p {
 	color: #414B53;
 	border-bottom: 1px solid lightgrey;
 	padding: 5px;
+}
+
+#answers-graph{
+	float: none;
+	min-height: 100px;
+	padding-bottom: 0.5em;
+	text-align: center;
+}
+
+#answers-graph .graph-bar{
+	background: none repeat scroll 0 0 #DD9E37;
+    border: 1px solid #000000;
+    width: 43px;
+}
+
+#answers-graph .graph-item{
+	float: left;
+	margin-left: 0.8em;
+}
+
+#question-right-column{
+    float: right;
+    margin-left: 20px;
+    width: 30%;
+}
+
+#time-slider {
+	font-size: 1em;
+	margin-top: 6px;
+	width: 70%;
+}
+
+#time-slider fieldset { 
+	border:0; 
+	margin: 0em; 
+	height: 58px;
+	padding: 0;
+}	
+#time-slider label {
+	font-weight: normal; 
+	float: left; 
+	margin-right: .5em; 
+}
+
+#time-slider select {
+/*	margin-right: 1em; */
+	float: left;
+	display:none;
+}
+
+#time-slider .ui-slider {
+	clear: both; 
+	top: 10px;
+	margin-left:40px;
+}
+
+.ui-slider li span.ui-slider-label-show, .ui-slider dd span.ui-slider-label-show{
+	font-size: 0.7em;
+}
+
+.ui-slider dt{
+	font-size: 0.7em;
+}
+
+#assessment-notes-container {
+    background-color: #DD9E37;
+    border: 1px solid black;
+    margin: 10px 0;
+    padding: 10px;
+    width: 63%;
 }

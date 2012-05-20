@@ -1,6 +1,8 @@
 <?php
 $PLACEWEB_CONFIG = Array();
 
+$PLACEWEB_CONFIG['assetsURL'] = "http://localhost/mywebapps/PlaceWeb.GitHub/NEOplace";
+
 // home node title
 $PLACEWEB_CONFIG['homeNodeTitle'] = "Physics Learning Across <br/>Contexts and Environments";
 
@@ -28,7 +30,7 @@ $PLACEWEB_CONFIG['ffmpegPath'] = '/usr/local/bin/ffmpeg';
 //$PLACEWEB_CONFIG['uploadDir'] = "/var/www/place/content/";
 
 // Antonio Config
-//$PLACEWEB_CONFIG['uploadDir'] = "/var/www/mywebapps/PlaceWeb.GitHub/place.web/public/content/";
+//$PLACEWEB_CONFIG['uploadDir'] = "/var/www/mywebapps/PlaceWeb.GitHub/place.web.agamba/public/content/";
 
 // server config
 $PLACEWEB_CONFIG['uploadDir'] = "/var/www/place/public/content/";
@@ -36,6 +38,8 @@ $PLACEWEB_CONFIG['uploadDir'] = "/var/www/place/public/content/";
 $PLACEWEB_CONFIG['uploadWebDir'] = "/content/";
 
 //////////////////////////////////////////////////////////////////
+
+$PLACEWEB_CONFIG['reAnswerPrompt'] = 'The aggregated Tags of the class are now available to you (Shown in the Tag box - your votes are included). You now have the opportunity to re-answer and re-tag the question. If you do please provide an explanation for your changes (Your Answer and Explanation can both be provided below).';
 
 $PLACEWEB_CONFIG['questionChoices'] = array(
 	"1" => "A",
@@ -71,8 +75,26 @@ $PLACEWEB_CONFIG['questionTypes'] = array(
 
 // Node Types
 $PLACEWEB_CONFIG['nodeTypes'] = array(
-	"3" => "Photo", 
-	"4" => "Video", 
-	"5" => "Narrative", 
+	"1" => "Example", 
+	"2" => "Lab Report", 
+	"3" => "Investigation", 
+	"4" => "Challenge Problem"
 );
+
+// Default Answer template
+$PLACEWEB_CONFIG['answerTemplate'] = "
+	<p><b>1. Provide a brief rationale for why you chose the answer you did.</b></p>
+	<p></p>
+	<p><b>2. How did examples provided with the question to help you understand and respond to the
+	problem?</b></p>
+	<p></p>
+	<p><b>3. How was each example connected or related to the challenge problem?</b></p>
+	<p></p>
+	<p><b>Example 1 was related as follows:</b></p>
+	<p></p>
+	<p><b>Example 2 was related as follows:</b></p>
+	<p></p>
+	<p><b>Example 3 was related as follows:</b></p>
+	<p></p>
+	<p><b>Example 4 was related as follows:</b></p>";
 ?>

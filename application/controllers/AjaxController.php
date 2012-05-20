@@ -117,9 +117,12 @@ class AjaxController extends Zend_Controller_Action
 			$q->andWhereNotIn('a.activity_type_id', $studentRepressedActivityTypes);
 		}
 		
-		if (isset($params['limit'])){
-			$q->limit($params['limit']);
-			$this->view->limit = $params['limit'];
+		$from = isset($params['from']) ? $params['from'] : 0;
+		$step = isset($params['step']) ? $params['step'] : 0;
+		
+		$q->offset($from);
+		if ($step != 0){
+			$q->limit($step);
 		}
 		
     	$activities = $q->execute();		
@@ -150,9 +153,12 @@ class AjaxController extends Zend_Controller_Action
 			$q->andWhereNotIn('a.activity_type_id', $studentRepressedActivityTypes);
 		}
 		
-		if (isset($params['limit'])){
-			$q->limit($params['limit']);
-			$this->view->limit = $params['limit'];
+		$from = isset($params['from']) ? $params['from'] : 0;
+		$step = isset($params['step']) ? $params['step'] : 0;
+		
+		$q->offset($from);
+		if ($step != 0){
+			$q->limit($step);
 		}
 
     	$activities = $q->execute();
@@ -164,14 +170,20 @@ class AjaxController extends Zend_Controller_Action
     {
 		$params = $this->getRequest()->getParams();
 		
-		$studentRepressedActivityTypes = array(
-			ActivityType::$ASSESSED_COMMENT, 
-			ActivityType::$ASSESSED_EXAMPLE, 
-			ActivityType::$ASSESSED_ANSWER,
-			ActivityType::$CREATED_QUESTION,
-			ActivityType::$ANSWERED_QUESTION, 
-			ActivityType::$VOTED_ON_ANSWER_CONCEPT,
-			ActivityType::$VOTED_ON_EXAMPLE_CONCEPT
+		// $studentRepressedActivityTypes = array(
+		// 	ActivityType::$ASSESSED_COMMENT, 
+		// 	ActivityType::$ASSESSED_EXAMPLE, 
+		// 	ActivityType::$ASSESSED_ANSWER,
+		// 	ActivityType::$CREATED_QUESTION,
+		// 	ActivityType::$ANSWERED_QUESTION, 
+		// 	ActivityType::$VOTED_ON_ANSWER_CONCEPT,
+		// 	ActivityType::$VOTED_ON_EXAMPLE_CONCEPT
+		// );
+		$studentActivityTypes = array(
+			ActivityType::$COMMENTED_ON_COMMENT,
+			ActivityType::$COMMENTED_ON_EXAMPLE,
+			ActivityType::$CREATED_EXAMPLE,
+			ActivityType::$CREATED_QUESTION
 		);
 		
         $q = new Doctrine_RawSql();
@@ -186,12 +198,15 @@ class AjaxController extends Zend_Controller_Action
         	->orderBy('a.id DESC');
     	
 		if ($_SESSION['profile'] == 'STUDENT'){
-			$q->andWhereNotIn('a.activity_type_id', $studentRepressedActivityTypes);
+			$q->andWhereIn('a.activity_type_id', $studentActivityTypes);
 		}
 
-		if (isset($params['limit'])){
-			$q->limit($params['limit']);
-			$this->view->limit = $params['limit'];
+		$from = isset($params['from']) ? $params['from'] : 0;
+		$step = isset($params['step']) ? $params['step'] : 0;
+		
+		$q->offset($from);
+		if ($step != 0){
+			$q->limit($step);
 		}
 			
     	$activities = $q->execute();
